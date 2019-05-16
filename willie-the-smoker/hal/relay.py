@@ -2,6 +2,7 @@
 from typing import Callable
 
 # Internal deps
+from common.event_names import RELAY_ACTIVE
 from common.observable import Observable
 
 class Relay(Observable):
@@ -18,5 +19,5 @@ class Relay(Observable):
     def active(self, value: bool):
         if (value != self._active):
             self._active = value
-            self.property_changed("relay_active", value)
+            self.property_changed(RELAY_ACTIVE, value)
             # TODO: Set GPIO state
