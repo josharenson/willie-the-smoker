@@ -1,0 +1,12 @@
+Source: willie-the-smoker
+Section: python
+Priority: extra
+Maintainer: Josh Arenson <josharenson@gmail.com>
+Build-Depends: debhelper (>= 9), python3, dh-virtualenv (>= 1.0)
+Standards-Version: 3.9.5
+
+Package: willie-the-smoker
+Architecture: any
+Pre-Depends: dpkg (>= 1.16.1), python3 ${misc:Pre-Depends}
+Depends: gunicorn, rabbitmq-server ${misc:Depends}
+Description: A web based way to view and controll a meat smoker built with a Raspberry Pi.
