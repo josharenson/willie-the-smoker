@@ -6,6 +6,7 @@ from common.event_names import RELAY_ACTIVE
 from common.observable import Observable
 
 class Relay(Observable):
+
     def __init__(self):
         super(Relay, self).__init__()
 
