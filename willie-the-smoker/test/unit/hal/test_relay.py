@@ -1,4 +1,4 @@
-from common.event_names import RELAY_ACTIVE
+from common.events import RELAY_ACTIVE
 from hal.relay import Relay
 
 from unittest.mock import MagicMock

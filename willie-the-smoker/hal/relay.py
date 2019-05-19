@@ -2,7 +2,7 @@
 from typing import Callable
 
 # Internal deps
-from common.event_names import RELAY_ACTIVE
+from common.events import RELAY_ACTIVE
 from common.observable import Observable
 
 class Relay(Observable):

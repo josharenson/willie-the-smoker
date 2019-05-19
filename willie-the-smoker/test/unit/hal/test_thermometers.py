@@ -1,4 +1,4 @@
-from common.event_names import TEMP_CHANGED
+from common.events import TEMP_CHANGED
 from hal.thermometers import Thermometers
 
 from unittest.mock import MagicMock
