@@ -1,0 +1,39 @@
+@startuml
+rectangle "SmokeD Process" {
+class relay as "hal/relay" << Observable >> {
+active?()
+onActiveChanged()
+}
+
+class thermometers as "hal/thermometers" << Observable >>  {
+getTemperature()
+onTemperatureChanged()
+
+polling_interval_s
+}
+note top: Polling happens in separate thread\n only when there are observers \nregistered
+
+class smoked as "smoked/SmokeD" << Singleton >> {
+}
+note bottom: This service runs privileged as it\n has access to low level hardware
+}
+relay->smoked
+thermometers->smoked
+
+rectangle "RabbitMQ Process"{
+class msgQ as "Message Bus" {
+}
+note top: This bus is readible by other processes
+}
+smoked -> msgQ
+
+rectangle "Gunicorn process" {
+class webapp as "app/willie-the-rest-api"
+note bottom: webapp consumes hw events from the\n  message queue
+msgQ -[hidden]> webapp
+webapp <- msgQ
+
+class webpage as "app/html+js" {
+}
+}
+@enduml
