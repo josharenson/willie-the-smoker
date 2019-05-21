@@ -12,6 +12,7 @@ from common.observable import Observable
 
 LOG = logging.getLogger("root")
 
+
 class Thermometers(Observable):
 
     def __init__(self, polling_interva_s=5):
@@ -58,6 +59,7 @@ class Thermometers(Observable):
     def _stop_polling(self):
         LOG.debug("Exit handler is stopping temp polling")
         self._polling = False
+        self._polling_thread.join()
 
     def _to_f(self, value: float) -> float:
         return (value * (9.0/5.0)) + 32.0

@@ -10,7 +10,14 @@ import unittest
 from common import events
 from smoked.smoked_service import SmokeDService
 
+
 class TestSmoked(unittest.TestCase):
+
+    def setUp(self):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
+
+    def tearDown(self):
+        self.connection.close()
 
     @classmethod
     def tearDownClass(cls):
@@ -20,14 +27,13 @@ class TestSmoked(unittest.TestCase):
     def test_relay_changed(self):
         smoked = SmokeDService()
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-        channel = connection.channel()
+        channel = self.connection.channel()
         channel.queue_declare(queue=events.SMOKED_QUEUE_NAME)
 
         self.assertFalse(smoked.relay.active)
         smoked.relay.active = True
 
-        method, header,body = channel.basic_get(events.SMOKED_QUEUE_NAME, auto_ack=True)
+        method, header, body = channel.basic_get(events.SMOKED_QUEUE_NAME, auto_ack=True)
 
         res_obj = json.loads(body.decode('utf-8'))
         actual_result = res_obj[events.RELAY_ACTIVE]
@@ -41,8 +47,7 @@ class TestSmoked(unittest.TestCase):
         smoked.thermometers._read_temp = MagicMock()
         smoked.thermometers._read_temp.return_value = initial_temp_reading
 
-        connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
-        channel = connection.channel()
+        channel = self.connection.channel()
         channel.queue_declare(queue=events.SMOKED_QUEUE_NAME)
 
         self.assertEqual(smoked.thermometers.get_temperature(""), initial_temp_reading)
@@ -51,7 +56,7 @@ class TestSmoked(unittest.TestCase):
         smoked.thermometers._read_temp.return_value = updated_temp_val
         time.sleep(2 * poll_interval_s)
 
-        method, header,body = channel.basic_get(events.SMOKED_QUEUE_NAME, auto_ack=True)
+        method, header, body = channel.basic_get(events.SMOKED_QUEUE_NAME, auto_ack=True)
 
         res_obj = json.loads(body.decode('utf-8'))
         actual_result = res_obj[events.TEMP_CHANGED]
