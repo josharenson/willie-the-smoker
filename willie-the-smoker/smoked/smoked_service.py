@@ -10,7 +10,7 @@ from common.singleton import Singleton
 from hal.relay import Relay
 from hal.thermometers import Thermometers
 
-LOG = logging.getLogger("root")
+LOG = logging.getLogger(__name__)
 
 
 class SmokeDService(object, metaclass=Singleton):
@@ -46,7 +46,7 @@ class SmokeDService(object, metaclass=Singleton):
 
     @staticmethod
     def _on_relay_active_changed(value: bool):
-        msg = {events.RELAY_ACTIVE:value}
+        msg = {events.RELAY_ACTIVE: value}
         this = SmokeDService()
         this.channel.basic_publish(exchange='',
                                    routing_key=events.SMOKED_QUEUE_NAME,
@@ -54,7 +54,7 @@ class SmokeDService(object, metaclass=Singleton):
 
     @staticmethod
     def _on_temprature_changed(value: float):
-        msg = {events.TEMP_CHANGED:value}
+        msg = {events.TEMP_CHANGED: value}
         this = SmokeDService()
         this.channel.basic_publish(exchange='',
                                    routing_key=events.SMOKED_QUEUE_NAME,

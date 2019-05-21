@@ -5,6 +5,7 @@ import unittest
 # Internal deps
 from common.event_listener import EventListener
 
+
 class TestEventListener(unittest.TestCase):
 
     def test_adding_listeners(self):

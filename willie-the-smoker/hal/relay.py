@@ -1,9 +1,6 @@
-# External deps
-from typing import Callable
-
-# Internal deps
 from common.events import RELAY_ACTIVE
 from common.observable import Observable
+
 
 class Relay(Observable):
 

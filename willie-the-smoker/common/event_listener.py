@@ -1,6 +1,4 @@
 # External deips
-import pdb
-from threading import Lock
 from typing import Callable
 
 import json
@@ -33,15 +31,15 @@ class EventListener(object):
         self._queue_name = queue_name
 
     def add_listener(self, event_name: str, callback: Callable):
-        LOG.debug("Registered a listener for {}".format(event_name))
         if event_name not in self._events:
             self._events[event_name] = []
         self._events[event_name].append(callback)
+        LOG.debug("Registered a listener for {}".format(event_name))
 
     def remove_listener(self, event_name: str, callback: Callable):
-        LOG.debug("Removed a listener for {}".format(event_name))
         if event_name in self._events and callback in self._events[event_name]:
             self._events[event_name].remove(callback)
+            LOG.debug("Removed a listener for {}".format(event_name))
 
     def start(self):
         self._consumer_thread = threading.Thread(target=self._start)

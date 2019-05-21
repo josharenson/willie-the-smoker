@@ -1,5 +1,5 @@
-import pdb
 from typing import Callable
+
 
 class Observable(object):
 
@@ -22,7 +22,6 @@ class Observable(object):
             return
         for _observer in self._observers[event_name]:
             if _observer is observer:
-               self. _observers[event_name].remove(observer)
-               if not self._observers[event_name]:
-                   del(self._observers[event_name])
-
+                self. _observers[event_name].remove(observer)
+                if not self._observers[event_name]:
+                    del(self._observers[event_name])

@@ -1,7 +1,5 @@
-from common.events import TEMP_CHANGED
 from hal.thermometers import Thermometers
 
-from unittest.mock import MagicMock
 import unittest
 
 
