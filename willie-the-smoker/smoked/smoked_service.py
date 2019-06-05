@@ -15,7 +15,7 @@ LOG = logging.getLogger(__name__)
 
 class SmokeDService(object, metaclass=Singleton):
 
-    def __init__(self, sensor_poll_interval_s=10):
+    def __init__(self, sensor_poll_interval_s=10, simulate=False):
         # Initialize logger
         LOG.setLevel(logging.DEBUG)
         fh = logging.FileHandler("smoked.log")
@@ -41,8 +41,8 @@ class SmokeDService(object, metaclass=Singleton):
         self.relay.add_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
 
         # Initialize Thermometers
-        self.thermometers = Thermometers(sensor_poll_interval_s)
-        self.thermometers.add_observer(events.TEMP_CHANGED, self._on_temprature_changed)
+        self.thermometers = Thermometers(sensor_poll_interval_s, simulate=simulate)
+        self.thermometers.add_observer(events.TEMP_CHANGED, self._on_temperature_changed)
 
     @staticmethod
     def _on_relay_active_changed(value: bool):
@@ -53,8 +53,8 @@ class SmokeDService(object, metaclass=Singleton):
                                    body=json.dumps(msg))
 
     @staticmethod
-    def _on_temprature_changed(value: float):
-        msg = {events.TEMP_CHANGED: value}
+    def _on_temperature_changed(temperatures: dict):
+        msg = {events.TEMP_CHANGED: temperatures}
         this = SmokeDService()
         this.channel.basic_publish(exchange='',
                                    routing_key=events.SMOKED_QUEUE_NAME,
@@ -62,6 +62,6 @@ class SmokeDService(object, metaclass=Singleton):
 
     def stop(self):
         self.relay.remove_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
-        self.thermometers.remove_observer(events.TEMP_CHANGED, self._on_temprature_changed)
+        self.thermometers.remove_observer(events.TEMP_CHANGED, self._on_temperature_changed)
         self.channel.queue_delete(events.SMOKED_QUEUE_NAME)
         self.connection.close()

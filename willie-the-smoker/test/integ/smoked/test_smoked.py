@@ -29,6 +29,7 @@ class TestSmoked(unittest.TestCase):
 
         channel = self.connection.channel()
         channel.queue_declare(queue=events.SMOKED_QUEUE_NAME)
+        channel.queue_purge(events.SMOKED_QUEUE_NAME)
 
         self.assertFalse(smoked.relay.active)
         smoked.relay.active = True
@@ -49,6 +50,7 @@ class TestSmoked(unittest.TestCase):
 
         channel = self.connection.channel()
         channel.queue_declare(queue=events.SMOKED_QUEUE_NAME)
+        channel.queue_purge(events.SMOKED_QUEUE_NAME)
 
         self.assertEqual(smoked.thermometers.get_temperature(""), initial_temp_reading)
 

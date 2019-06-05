@@ -4,6 +4,7 @@ from typing import Callable
 
 import atexit
 import logging
+import random
 import time
 
 # Internal deps
@@ -15,12 +16,14 @@ LOG = logging.getLogger("root")
 
 class Thermometers(Observable):
 
-    def __init__(self, polling_interva_s=5):
+    def __init__(self, polling_interva_s=5, simulate=False):
         super(Thermometers, self).__init__()
 
         self._polling = False
         self._sensor_poll_interval_s = 1
-        self._polling_thread = Thread(target=self._start_polling)
+
+        target = self._start_polling if not simulate else self.__start_simulating
+        self._polling_thread = Thread(target=target)
         self._previous_temp = self.get_temperature("")
 
     def add_observer(self, event_name: str, observer: Callable):
@@ -54,6 +57,13 @@ class Thermometers(Observable):
             if cur_temp != self._previous_temp:
                 self._previous_temp = cur_temp
                 self.property_changed(TEMP_CHANGED, cur_temp)
+            time.sleep(self._sensor_poll_interval_s)
+
+    def __start_simulating(self):
+        while self._polling:
+            LOG.debug("Simulating a temp reading")
+            res = {"sensor_name": "Hank Hill", "sensor_value": random.randint(100, 300)}
+            self.property_changed(TEMP_CHANGED, res)
             time.sleep(self._sensor_poll_interval_s)
 
     def _stop_polling(self):
