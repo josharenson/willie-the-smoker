@@ -20,3 +20,4 @@ class TestRelay(unittest.TestCase):
         onActiveChanged.assert_called_with(False)
 
         self.assertFalse(relay.active)
+        relay.remove_observer(RELAY_ACTIVE, onActiveChanged)
