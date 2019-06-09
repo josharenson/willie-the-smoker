@@ -42,7 +42,7 @@ class Thermometers(Observable):
     def __start_simulating(self):
         while not self._main_event.isSet():
             LOG.debug("Simulating a temp reading")
-            res = {"sensor_name": "Hank Hill", "sensor_value": random.randint(100, 300)}
+            res = [{"sensor_name": "Hank Hill", "sensor_value": random.randint(100, 300)}]
             self.property_changed(TEMP_CHANGED, res)
             time.sleep(self._sensor_poll_interval_s)
 

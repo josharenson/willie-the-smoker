@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="{{ url_for('static', filename='js/jquery-min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/radial-gague.js') }}"></script>
+    <script async src="{{ url_for('static', filename='js/radial-gague-handler.js') }}"></script>
+    <!--
+                  onload="new TemperatureGuage({destCanvasId:'canvas-id', title:'sensor2'}).draw();
+                  new TemperatureGuage({destCanvasId:'another-canvas-id'}).draw();">
+                  </script>-->
+    <script src="{{ url_for('static', filename='js/main.js') }}"
+        onload="initializeDashboard()">
+    </script>
+    <title>Willie The Smoker</title>
+
+</head>
+<body>
+    <nav class="sidebar">
+        <a class="active" href="#home">Dashboard</a>
+        <a href="#news">Settings</a>
+        <a href="#about">About</a>
+    </nav>
+
+    <div class="content">
+        <div id="relay"><img src="static/images/flame_on.svg" height=50 width=50 /></div>
+        <div id="temp-gauges"></div>
+        <button onclick="TemperatureGuage.unitsChanged(false)" type="button">Click Me!</button>
+    </div>
+
+</body>
+</html>

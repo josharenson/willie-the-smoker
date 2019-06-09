@@ -3,6 +3,8 @@ import json
 import logging
 import pika
 import sys
+import threading
+import time
 
 # Internal deps
 from common import events
@@ -37,7 +39,7 @@ class SmokeDService(object, metaclass=Singleton):
         self.channel.queue_declare(events.SMOKED_QUEUE_NAME)
 
         # Initialize Relay
-        self.relay = Relay()
+        self.relay = Relay(simulate=simulate)
         self.relay.add_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
 
         # Initialize Thermometers
@@ -46,6 +48,7 @@ class SmokeDService(object, metaclass=Singleton):
 
     @staticmethod
     def _on_relay_active_changed(value: bool):
+        LOG.debug("Relay active changed-> {}".format(value))
         msg = {events.RELAY_ACTIVE: value}
         this = SmokeDService()
         this.channel.basic_publish(exchange='',

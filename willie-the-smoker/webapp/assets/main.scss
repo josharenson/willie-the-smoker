@@ -1,0 +1,11 @@
+$main-background: #5CBD95;
+html {
+    background-color: $main-background;
+}
+
+
+#relay {
+    margin: 0 auto;
+}
+
+@import 'menu'

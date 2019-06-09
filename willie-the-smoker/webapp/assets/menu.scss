@@ -1,0 +1,46 @@
+$menu-active-background-color: #05386B;
+$menu-hover-color: #8EE4AF;
+$menu-link-color: #EDF5E1;
+$menu-width: 310px;
+
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: $menu-width;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+}
+
+.sidebar a {
+  color: $menu-link-color;
+  display: block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 3em;
+  padding: 16px;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.sidebar a.active {
+  background-color: $menu-active-background-color;
+  color: white;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: $menu-hover-color;
+  color: white;
+}
+
+div.content {
+  margin-left: $menu-width;
+  padding: 1px 16px;
+  height: 1000px;
+}
+
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
