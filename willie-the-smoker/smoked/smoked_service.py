@@ -9,8 +9,7 @@ import time
 # Internal deps
 from common import events
 from common.singleton import Singleton
-from hal.relay import Relay
-from hal.thermometers import Thermometers
+from smoked.thermostat import Thermostat
 
 LOG = logging.getLogger(__name__)
 
@@ -38,16 +37,12 @@ class SmokeDService(object, metaclass=Singleton):
         self.channel = self.connection.channel()
         self.channel.queue_declare(events.SMOKED_QUEUE_NAME)
 
-        # Initialize Relay
-        self.relay = Relay(simulate=simulate)
-        self.relay.add_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
+        # Initialize thermostat
+        self.thermostat = Thermostat(sensor_poll_interval_s, simulate)
+        self.thermostat.add_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
+        self.thermostat.add_observer(events.TEMP_CHANGED, self._on_temperature_changed)
 
-        # Initialize Thermometers
-        self.thermometers = Thermometers(sensor_poll_interval_s, simulate=simulate)
-        self.thermometers.add_observer(events.TEMP_CHANGED, self._on_temperature_changed)
-
-    @staticmethod
-    def _on_relay_active_changed(value: bool):
+    def _on_relay_active_changed(self, value: bool):
         LOG.debug("Relay active changed-> {}".format(value))
         msg = {events.RELAY_ACTIVE: value}
         this = SmokeDService()
@@ -55,8 +50,7 @@ class SmokeDService(object, metaclass=Singleton):
                                    routing_key=events.SMOKED_QUEUE_NAME,
                                    body=json.dumps(msg))
 
-    @staticmethod
-    def _on_temperature_changed(temperatures: dict):
+    def _on_temperature_changed(self, temperatures: dict):
         msg = {events.TEMP_CHANGED: temperatures}
         this = SmokeDService()
         this.channel.basic_publish(exchange='',
@@ -64,7 +58,8 @@ class SmokeDService(object, metaclass=Singleton):
                                    body=json.dumps(msg))
 
     def stop(self):
-        self.relay.remove_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
-        self.thermometers.remove_observer(events.TEMP_CHANGED, self._on_temperature_changed)
+        self.thermostat.stop()
+        self.thermostat.remove_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
+        self.thermostat.remove_observer(events.TEMP_CHANGED, self._on_temperature_changed)
         self.channel.queue_delete(events.SMOKED_QUEUE_NAME)
         self.connection.close()

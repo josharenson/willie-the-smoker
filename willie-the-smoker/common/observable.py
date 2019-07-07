@@ -1,5 +1,6 @@
 from typing import Callable
 
+import atexit
 import threading
 
 
@@ -10,6 +11,8 @@ class Observable(object):
         self._main_event = threading.Event()
         self._running = False
         self._worker = None  # Create on demand as threads can't be reused
+
+        atexit.register(self._stop)
 
     def add_observer(self, event_name: str, observer: Callable):
         print("Adding observer for {}".format(event_name))
@@ -48,5 +51,5 @@ class Observable(object):
     def _stop(self):
         self._running = False
         self._main_event.set()
-        self._worker.join()
-
+        if self._worker is not None:
+            self._worker.join()
