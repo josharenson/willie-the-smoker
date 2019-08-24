@@ -55,6 +55,7 @@ class SmokeDService(object, metaclass=Singleton):
     def start(self):
         self.thermostat.add_observer(events.RELAY_ACTIVE, self._on_relay_active_changed)
         self.thermostat.add_observer(events.TEMP_CHANGED, self._on_temperature_changed)
+        self.thermostat.start()
 
     def stop(self):
         self.thermostat.stop()
