@@ -1,6 +1,5 @@
 # External deps
 import logging
-import json
 import random
 import time
 
@@ -9,6 +8,11 @@ from common.events import TEMP_CHANGED
 from common.observable import Observable
 
 LOG = logging.getLogger("root")
+
+#########################################
+# Message Format
+# { string->"Sensor Name": int->value }
+#########################################
 
 
 class Thermometers(Observable):
@@ -44,7 +48,7 @@ class Thermometers(Observable):
                 if self._fahrenheit:
                     temp = self._to_f(temp)
                 params[thermometer_name] = temp
-            self.property_changed(TEMP_CHANGED, json.dumps(params))
+            self.property_changed(TEMP_CHANGED, params)
 
     def event_loop(self):  # override
         while not self._main_event.isSet():

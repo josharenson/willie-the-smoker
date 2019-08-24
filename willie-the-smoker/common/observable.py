@@ -38,11 +38,12 @@ class Observable(object):
             observer(value)
 
     def remove_observer(self, event_name: str,  observer: Callable):
+        print("Removing observer for {}".format(event_name))
         if event_name not in self._observers:
             return
-        for _observer in self._observers[event_name]:
-            if _observer is observer:
-                self. _observers[event_name].remove(observer)
+        for i in range(len(self._observers[event_name])):
+            if self._observers[event_name][i] == observer:
+                del(self. _observers[event_name][i])
                 if not self._observers[event_name]:
                     del(self._observers[event_name])
         if not len(self._observers):

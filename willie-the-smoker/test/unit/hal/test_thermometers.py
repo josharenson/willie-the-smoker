@@ -3,7 +3,6 @@ from hal.thermometers import Thermometers
 
 from unittest.mock import MagicMock, patch
 
-import json
 import time
 import unittest
 
@@ -23,7 +22,7 @@ class TestThermometers(unittest.TestCase):
         t.remove_observer(TEMP_CHANGED, observer)
 
         self.assertTrue(observer.called)
-        params = json.loads(observer.call_args[0][0])
+        params = observer.call_args[0][0]
         for thermometer_name, actual_temp in params.items():
             self.assertTrue(thermometer_name in t._thermometers)
             self.assertEqual(actual_temp, expected_temp)
