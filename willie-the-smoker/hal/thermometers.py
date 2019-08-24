@@ -9,42 +9,51 @@ from common.observable import Observable
 
 LOG = logging.getLogger("root")
 
+#########################################
+# Message Format
+# { string->"Sensor Name": int->value }
+#########################################
+
 
 class Thermometers(Observable):
 
-    def __init__(self, polling_interva_s=5, simulate=False):
+    def __init__(self, fahrenheit=False, polling_interval_s=5, simulate=False):
         super(Thermometers, self).__init__()
-        self._sensor_poll_interval_s = 1
-        self._previous_temp = self.get_temperature("")
-        if simulate:
-            LOG.debug("Simulating thermometer data")
-            self.event_loop = self.__start_simulating
+        # TODO: This will come from settings in the future
+        self._fahrenheit = fahrenheit
+        self._polling_interval_s = polling_interval_s
+        self._simulate = simulate
+        self._thermometers = {"Upper Ambient": 100,
+                              "Internal Food": 80}
 
-    def get_temperature(self, sensor_name: str, celcius=True) -> float:
-        # TODO GPIO nonsense
-        if celcius:
-            return self._read_temp()
-        else:
-            return self._to_f(self._read_temp())
+    def _fake_read(self, name):
+        return random.randint(50, 100)
 
-    def _read_temp(self) ->float:
-        return 100.0
+    def __real_read(self, name):
+        raise NotImplementedError
+
+    def _poll_thermometers(self):
+        read_fn = self._fake_read if self._simulate else self.__real_read
+        thermometers_changed = []
+        for thermometer_name in self._thermometers:
+            new_temp = read_fn(thermometer_name)
+            if new_temp != self._thermometers[thermometer_name]:
+                self._thermometers[thermometer_name] = new_temp
+                thermometers_changed.append(thermometer_name)
+
+        if thermometers_changed:
+            params = {}
+            for thermometer_name in thermometers_changed:
+                temp = self._thermometers[thermometer_name]
+                if self._fahrenheit:
+                    temp = self._to_f(temp)
+                params[thermometer_name] = temp
+            self.property_changed(TEMP_CHANGED, params)
 
     def event_loop(self):  # override
         while not self._main_event.isSet():
-            cur_temp = self.get_temperature("")
-            LOG.debug("Polling temp: {}".format(cur_temp))
-            if cur_temp != self._previous_temp:
-                self._previous_temp = cur_temp
-                self.property_changed(TEMP_CHANGED, cur_temp)
-            time.sleep(self._sensor_poll_interval_s)
-
-    def __start_simulating(self):
-        while not self._main_event.isSet():
-            LOG.debug("Simulating a temp reading")
-            res = [{"sensor_name": "Hank Hill", "sensor_value": random.randint(100, 300)}]
-            self.property_changed(TEMP_CHANGED, res)
-            time.sleep(self._sensor_poll_interval_s)
+            self._poll_thermometers()
+            time.sleep(self._polling_interval_s)
 
     def _to_f(self, value: float) -> float:
         return (value * (9.0/5.0)) + 32.0
